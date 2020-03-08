@@ -1,0 +1,111 @@
+﻿@font-face {
+    font-family: 'sans';
+    src: url('/assets/sans/IRANSans.woff2')
+}
+
+@font-face {
+    font-family: 'light_sans';
+    src: url('/assets/sans/IRANSansWeb_Light.woff2')
+}
+
+@font-face {
+    font-family: 'medium_sans';
+    src: url('/assets/sans/IRANSansWeb_Medium.woff2')
+}
+
+@font-face {
+    font-family: 'bold_sans';
+    src: url('/assets/sans/IRANSansWeb_Bold.woff2')
+}
+
+.medium-sans {
+    font-family: medium_sans !important;
+    font-size: 12px;
+}
+
+.bold-sans {
+    font-family: bold_sans !important;
+    font-size: 12px;
+}
+
+.light-sans {
+    font-family: sans !important;
+    font-size: 12px;
+}
+
+.sans {
+    font-family: sans !important;
+    font-size: 12px;
+}
+
+.sans-small {
+    font-family: sans !important;
+    font-size: 10px;
+}
+
+.sans-xsmall {
+    font-family: sans !important;
+    font-size: 9px;
+}
+
+.sans-xxsmall {
+    font-family: sans !important;
+    font-size: 8px;
+}
+
+body {
+    background-color: rgb(230, 230, 230);
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+}
+
+.rtl {
+    direction: rtl !important;
+}
+
+.ltr {
+    direction: ltr !important;
+}
+
+.notifyjs-corner {
+    font-size: 10pt !important;
+    font-family: sans !important;
+}
+
+.no-resize {
+    resize: none !important;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #ffffff !important;
+}
+
+.pointer {
+    cursor: pointer !important;
+}
+
+#tablejournals {
+    direction: rtl;
+}
+#tablejournals tr td, #tablejournals tr th {
+    text-align: center;
+    border: 1px solid rgb(133, 133, 133) !important;
+    direction: ltr !important;
+}
+
+#tablejournals tr th {
+    background-color: silver !important;
+}
+
+#tablejournals tr td span {
+    color: blue;
+    cursor: pointer;
+}
+
+#tablejournals tr td img {
+    width: 50px;
+    height: auto;
+}

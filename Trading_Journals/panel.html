@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Trading Journals</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link href="assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="assets/js/bootstrap-datetimepicker.js"></script>
+    <script src="assets/js/notify.min.js"></script>
+    <link href="assets/css/com.css" rel="stylesheet" />
+    <script src="assets/js/script.js"></script>
+</head>
+<body>
+
+    <div class="container sans p-4">
+        <ul class="nav nav-tabs rtl" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">ثبت</a>
+            </li>
+            <li style="align-self: center;" class="pointer mr-3">
+                <a>خروج</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="row rtl text-right">
+                    <div class="col-sm-6">
+                        <div class="mt-1">زمان ورود معامله</div>
+                        <input class="form-control text-center ltr" id="enterdate" readonly required style="font-family: arial" />
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mt-1">زمان خروج از معامله</div>
+                        <input class="form-control text-center ltr" id="closedate" readonly style="font-family: arial" />
+                    </div>
+                </div>
+                <div class="row rtl text-right">
+                    <div class="col-sm-4">
+                        <div class="mt-1">نماد</div>
+                        <select class="form-control ltr" id="symbol" required>
+                            <option>DOWJONES</option>
+                            <option>GOLD</option>
+                            <option>EURUSD</option>
+                            <option>USDJPY</option>
+                            <option>GBPUSD</option>
+                            <option>USDCAD</option>
+                            <option>USDCHF</option>
+                            <option>CADCHF</option>
+                            <option>CADJPY</option>
+                            <option>CHFJPY</option>
+                            <option>EURCHF</option>
+                            <option>EURCAD</option>
+                            <option>EURGBP</option>
+                            <option>EURJPY</option>
+                            <option>GBPCAD</option>
+                            <option>AUDUSD</option>
+                            <option>NZDUSD</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mt-1">حجم معامله (Lot)</div>
+                        <input class="form-control text-center ltr" type="number" id="volume" required />
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mt-1">سود / ضرر ($)</div>
+                        <input class="form-control text-center ltr" type="number" id="profit" required />
+                    </div>
+                </div>
+                <div class="row rtl text-right">
+                    <div class="col-sm-4">
+                        <div class="mt-1">دلایل ورود به معامله</div>
+                        <textarea rows="3" class="form-control no-resize" id="tradereason"></textarea>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mt-1">حالت روانی ورود به معامله</div>
+                        <textarea rows="3" class="form-control no-resize" id="enterravani"></textarea>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="mt-1">حالت روانی خروج از معامله</div>
+                        <textarea rows="3" class="form-control no-resize" id="closeravani"></textarea>
+                    </div>
+                </div>
+                <div class="row rtl text-right">
+                    <div class="col-sm-6">
+                        <div class="mt-1">اشتباهات</div>
+                        <textarea rows="3" class="form-control no-resize" id="mistakes"></textarea>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="mt-1">توضیحات</div>
+                        <textarea rows="3" class="form-control no-resize" id="comment"></textarea>
+                    </div>
+                </div>
+                <div class="row rtl text-right">
+                    <div class="col-sm-6">
+                        <input type="file" class="mt-3" id="file" />
+                    </div>
+                    <div class="col-sm-6 text-left">
+                        <button class="btn btn-primary mt-3" id="sabt">ثبت</button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mt-3" id="tablejournals"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(function () {
+            $("#enterdate , #closedate").datetimepicker({ format: 'yyyy-mm-dd hh:ii' });
+        })
+        const getJournals = () => {
+            AjaxCall({
+                url: 'api.asmx/GetJournals',
+                param: { id: -1 },
+                func: (e) => {
+                    var d = JSON.parse(e.d);
+                    if (d.type != undefined) {
+                        RedAlert('n', d.message)
+                    } else {
+                        const body = [];
+                        body.push('<tr>' +
+                            '<th>ردیف</th>' +
+                            '<th>نماد</th>' +
+                            '<th>زمان ورود به معامله</th>' +
+                            '<th>زمان خروج از معامله</th>' +
+                            '<th>حجم معاملاتی</th>' +
+                            '<th>سود / ضرر</th>' +
+                            '<th></th>' +
+                            '<th></th>' +
+                            '<th></th>' +
+                            '</tr>')
+                        d.map((x, index) => {
+                            body.push("<tr>" +
+                                "<td>" + (index + 1) + "</td>" +
+                                "<td>" + x.Symbol + "</td>" +
+                                "<td>" + x.EnterDate + "</td>" +
+                                "<td>" + x.CloseDate + "</td>" +
+                                "<td>" + x.Volume + "</td>" +
+                                "<td>" + x.Profit + "</td>" +
+                                "<td><img src=\"" + x.FilePath + "\"/></td>" +
+                                "<td><span id=\"" + x.Id + "\">نمایش جزئیات</span></td>" +
+                                "<td><span>ویرایش</span></td>" +
+                                "</tr>");
+                        });
+                        $('#tablejournals').empty().append(body.join(''));
+                    }
+                }
+            })
+        }
+        getJournals();
+
+        $('#sabt').on('click', function () {
+            if (CheckRequiredFields('home')) {
+                RedAlert('n', 'لطفا فیلد خالی را تکمیل نمایید');
+                return;
+            }
+            const formdata = new FormData();
+            const obj = {
+                EnterDate: $('#enterdate').val(),
+                CloseDate: $('#closedate').val(),
+                Symbol: $('#symbol').val(),
+                Volume: $('#volume').val(),
+                Profit: $('#profit').val(),
+                TradeReason: $('#tradereason').val(),
+                EnterRavani: $('#enterravani').val(),
+                CloseRavani: $('#closeravani').val(),
+                Mistakes: $('#mistakes').val(),
+                Comment: $('#comment').val()
+            }
+            formdata.append('file', $('#file')[0].files[0]);
+            formdata.append('data', JSON.stringify(obj));
+            $.ajax({
+                url: 'api.asmx/Sabt',
+                data: formdata,
+                type: 'POST',
+                processData: false,
+                contentType: false,
+                complete: (e) => {
+                    var d = JSON.parse(e.responseXML.documentElement.innerHTML);
+                    if (d.type == "success") {
+                        GreenAlert('n', d.message);
+                        getJournals();
+                    } else {
+                        RedAlert('n', d.message);
+                    }
+                },
+                error: () => {
+                    RedAlert('n', 'خطا در برقراری ارتباط');
+                }
+            });
+        })
+
+        $('table').on('click', 'tr td span', function () {
+            AjaxCall({
+                url: 'api.asmx/GetJournals',
+                param: { id: this.id },
+                func: (e) => {
+                    var d = JSON.parse(e.d)
+                    AppendModal(d[0]);
+                }
+            })
+        })
+
+        const AppendModal = (data) => {
+            var modal = '<div class="modal fade sans" data-backdrop="static" tabindex="-1" role="dialog" id="detailmodal"> ' +
+                '<div class="modal-dialog modal-lg"> ' +
+                '<div class="modal-content"> ' +
+                '<img style="width: 100%; height: auto;" src="' + data.FilePath + '" /> ' +
+                '<div class="card-body rtl text-right"> ' +
+                '<p>زمان رود به معامله : ' + data.EnterDate + '</p> ' +
+                '<p>زمان خروج از معامله : ' + data.CloseDate + '</p> ' +
+                '<p>نماد : ' + data.Symbol + '</p> ' +
+                '<p>حجم معاملاتی : ' + data.Volume + '</p> ' +
+                '<p>سود / ضرر : ' + data.Profit + '</p> ' +
+                '<p>دلایل ورود به معامله : ' + data.TradeReason + '</p> ' +
+                '<p>حالت روانی ورود به معامله : ' + data.EnterRavani + '</p> ' +
+                '<p>حالت روانی خروج از معامله : ' + data.CloseRavani + '</p> ' +
+                '<p>اشتباهات : ' + data.Mistakes + '</p> ' +
+                '<p>توضیحات : ' + data.Comment + '</p> ' +
+                '<div class="text-left"> ' +
+                '<button class="btn btn-danger" onclick="removeModal()">بستن</button> ' +
+                '</div> </div> </div> </div> </div>';
+            $('body').append(modal);
+            $('#detailmodal').modal('show');
+        }
+
+        const removeModal = () => {
+            $('#detailmodal').modal('hide');
+            setTimeout(() => { $('#detailmodal').remove() }, 500)
+        }
+    </script>
+</body>
+</html>

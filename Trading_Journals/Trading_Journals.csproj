@@ -67,17 +67,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Global.asax" />
+    <Content Include="api.asmx" />
+    <Content Include="assets\css\bootstrap-datetimepicker.min.css" />
+    <Content Include="assets\css\com.css" />
+    <Content Include="assets\img\logo.png" />
+    <Content Include="assets\js\bootstrap-datetimepicker.js" />
+    <Content Include="assets\js\notify.min.js" />
+    <Content Include="assets\js\login.js" />
+    <Content Include="assets\js\script.js" />
+    <Content Include="index.html" />
+    <Content Include="favicon.ico" />
+    <Content Include="panel.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Global.asax.cs">
-      <DependentUpon>Global.asax</DependentUpon>
+    <Compile Include="api.asmx.cs">
+      <DependentUpon>api.asmx</DependentUpon>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\sans\IRANSans.woff2" />
+    <Content Include="assets\sans\IRANSansWeb_Bold.woff2" />
+    <Content Include="assets\sans\IRANSansWeb_Light.woff2" />
+    <Content Include="assets\sans\IRANSansWeb_Medium.woff2" />
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -86,7 +102,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <PropertyGroup>
