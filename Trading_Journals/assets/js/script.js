@@ -3,12 +3,16 @@
     var elements = $("#" + n).find("input[required] ,textarea[required] ,select[required]");
     for (var i = 0; i < elements.length; i++) {
         if ($(elements[i]).val() === '') {
-            $(elements[i]).css('border' , '1px solid red');
+            $(elements[i]).css('border', '1px solid red');
             flag = true;
         }
     }
-    setTimeout(function () { $(elements).css("border" , ''); }, 5000);
+    setTimeout(function () { $(elements).css("border", ''); }, 5000);
     return flag;
+}
+
+function ClearFields(area) {
+    $('#' + area).find('input ,textarea').val('');
 }
 
 function RedAlert(ele, txt) {

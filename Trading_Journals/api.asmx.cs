@@ -55,6 +55,22 @@ namespace Trading_Journals
             return GetPanel();
         }
 
+        [WebMethod]
+        public void Logout()
+        {
+            if (CheckAuthentication())
+            {
+                var limit = HttpContext.Current.Request.Cookies.Count;
+                for (var i = 0; i < limit; i++)
+                {
+                    var cookieName = HttpContext.Current.Request.Cookies[i]?.Name;
+                    var aCookie = new HttpCookie(cookieName) { Expires = DateTime.Now.AddDays(-1) };
+                    HttpContext.Current.Response.Cookies.Add(aCookie);
+                }
+            }
+
+        }
+
         public string GetPanel()
         {
             con.Open();
@@ -70,7 +86,7 @@ namespace Trading_Journals
         }
 
         [WebMethod]
-        public string GetJournals(int id)
+        public string GetJournals(int id, string startDate, string endDate)
         {
             if (!CheckAuthentication())
                 return new JavaScriptSerializer().Serialize(new { type = "error", message = "خطا در دریافت اطلاعات" });
@@ -79,7 +95,9 @@ namespace Trading_Journals
             var cmd = new SqlCommand("SELECT [Id],[Created],[Modified],[EnterDate],[CloseDate]" +
                                      ",[Symbol],[Volume],[Profit],[TradeReason],[EnterRavani],[CloseRavani]" +
                                      ",[Comment],[FilePath],[Mistakes]FROM [dbo].[Journals] " +
-                                     "where Id = " + id + " or " + id + " = -1 ", con);
+                                     "where (Id = " + id + " or " + id + " = -1) and " +
+                                     "((EnterDate > '" + startDate + "' and CloseDate < '" + endDate + "') or " +
+                                     " ('" + startDate + "' = '-1' and '" + endDate + "' = '-1'))", con);
             var rd = cmd.ExecuteReader();
             while (rd.Read())
             {
@@ -131,6 +149,70 @@ namespace Trading_Journals
             cmd.ExecuteNonQuery();
             con.Close();
             return new JavaScriptSerializer().Serialize(new { message = "با موفقیت ثبت شد", type = "success" });
+        }
+
+        [WebMethod]
+        public string EditJournal()
+        {
+            if (!CheckAuthentication())
+                return new JavaScriptSerializer().Serialize(new { message = "خطا در ثبت اطلاعات", type = "error" });
+            var data = HttpContext.Current.Request.Form["data"];
+            var file = HttpContext.Current.Request.Files["file"];
+            var obj = new JavaScriptSerializer().Deserialize<TradeData>(data);
+            var filePath = "";
+            if (file != null)
+            {
+                con.Open();
+                var cmdd = new SqlCommand("select FilePath from Journals where Id = " + obj.Id + " ", con);
+                var oldFilePath = cmdd.ExecuteScalar().ToString();
+                if (File.Exists(HttpContext.Current.Server.MapPath(oldFilePath)))
+                {
+                    File.Delete(HttpContext.Current.Server.MapPath(oldFilePath));
+                }
+                con.Close();
+                var fileName = Guid.NewGuid();
+                var fileExtension = Path.GetExtension(file.FileName);
+                var fname = Path.Combine(HttpContext.Current.Server.MapPath("files/"), fileName + fileExtension);
+                filePath = "files/" + fileName + fileExtension;
+                file.SaveAs(fname);
+            }
+            con.Open();
+            var cmd = new SqlCommand("update Journals set " +
+                                      "Modified = '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "'" +
+                                      ",EnterDate = '" + obj.EnterDate + "'" +
+                                      ",CloseDate = '" + obj.CloseDate + "'" +
+                                      ",Symbol = '" + obj.Symbol + "'" +
+                                      ",Volume = '" + obj.Volume + "'" +
+                                      ",Profit = '" + obj.Profit + "'" +
+                                      ",TradeReason = N'" + obj.TradeReason + "'" +
+                                      ",EnterRavani = N'" + obj.EnterRavani + "'" +
+                                      ",CloseRavani = N'" + obj.CloseRavani + "'" +
+                                      ",Comment = N'" + obj.Comment + "'" +
+                                      ",Mistakes =  N'" + obj.Mistakes + "'" +
+                                      " " + (filePath == "" ? "" : ",FilePath = '" + filePath + "' ") + " " +
+                                      " where Id = " + obj.Id + " ", con);
+
+            cmd.ExecuteNonQuery();
+            con.Close();
+            return new JavaScriptSerializer().Serialize(new { message = "با موفقیت ویرایش شد", type = "success" });
+        }
+
+        [WebMethod]
+        public void AddJournalImage()
+        {
+            if (!CheckAuthentication()) return;
+            var file = HttpContext.Current.Request.Files["image"];
+            var imageId = HttpContext.Current.Request.Form["image-id"];
+            if (file.ContentLength <= 0) return;
+            var fileName = Guid.NewGuid();
+            var fileExtension = Path.GetExtension(file.FileName);
+            var fname = Path.Combine(HttpContext.Current.Server.MapPath("files/"), fileName + fileExtension);
+            var filePath = "files/" + fileName + fileExtension;
+            file.SaveAs(fname);
+            con.Open();
+            var cmd = new SqlCommand("update Journals set FilePath = '" + filePath + "' where Id = " + imageId + " ", con);
+            cmd.ExecuteNonQuery();
+            con.Close();
         }
     }
 }
