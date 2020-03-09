@@ -94,7 +94,7 @@ namespace Trading_Journals
             con.Open();
             var cmd = new SqlCommand("SELECT [Id],[Created],[Modified],[EnterDate],[CloseDate]" +
                                      ",[Symbol],[Volume],[Profit],[TradeReason],[EnterRavani],[CloseRavani]" +
-                                     ",[Comment],[FilePath],[Mistakes]FROM [dbo].[Journals] " +
+                                     ",[Comment],[FilePath],[Mistakes]FROM Journals " +
                                      "where (Id = " + id + " or " + id + " = -1) and " +
                                      "((EnterDate > '" + startDate + "' and CloseDate < '" + endDate + "') or " +
                                      " ('" + startDate + "' = '-1' and '" + endDate + "' = '-1'))", con);
@@ -128,7 +128,7 @@ namespace Trading_Journals
             var data = HttpContext.Current.Request.Form["data"];
             var file = HttpContext.Current.Request.Files["file"];
             var filePath = "";
-            if (file.ContentLength > 0)
+            if (file != null)
             {
                 var fileName = Guid.NewGuid();
                 var fileExtension = Path.GetExtension(file.FileName);
@@ -138,7 +138,7 @@ namespace Trading_Journals
             }
             var obj = new JavaScriptSerializer().Deserialize<TradeData>(data);
             con.Open();
-            var cmd = new SqlCommand("INSERT INTO [dbo].[Journals]([Created],[Modified],[EnterDate],[CloseDate],[Symbol],[Volume]," +
+            var cmd = new SqlCommand("INSERT INTO Journals ([Created],[Modified],[EnterDate],[CloseDate],[Symbol],[Volume]," +
                                      "[Profit],[TradeReason],[EnterRavani],[CloseRavani],[Comment],[FilePath],[Mistakes])" +
                                      "VALUES('" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "' " +
                                      ", '" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "'" +

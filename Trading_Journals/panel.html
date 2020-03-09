@@ -99,13 +99,17 @@
                         <div class="col-sm-6">
                             <input type="file" class="mt-3" id="file" />
                         </div>
-                        <div class="col-sm-6 text-left">
-                            <button class="btn btn-primary mt-3" id="sabt">ثبت</button>
-                            <button class="btn btn-danger mt-3" id="edit" style="display: none;"
+                        <div class="col-sm-6 text-left pt-3">
+                            <div class="spinner-border ml-2 loading" role="status" 
+                                 style="vertical-align: middle !important; display: none;">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            <button class="btn btn-primary" id="sabt">ثبت</button>
+                            <button class="btn btn-danger" id="edit" style="display: none;"
                                     onclick="EditJournal($('#home').attr('journal-id'))">
                                 ویرایش
                             </button>
-                            <button class="btn btn-success mt-3" id="cancel" style="display: none;"
+                            <button class="btn btn-success" id="cancel" style="display: none;"
                                     onclick="CancelEdit()">
                                 انصراف
                             </button>
@@ -141,6 +145,10 @@
                         <input type="file" id="changeImageInput" />
                     </div>
                     <div class="card-footer text-left">
+                        <div class="spinner-border ml-2 loading" role="status" 
+                             style="vertical-align: middle !important; display: none;">
+                            <span class="sr-only">Loading...</span>
+                        </div>
                         <button class="btn btn-primary" type="button"
                                 onclick="addImageToJournal($('#modalAddImage').attr('image-id'))">
                             ثبت
@@ -205,6 +213,7 @@
                     "</tr>");
             });
             $('#tablejournals').empty().append(body.join(''));
+            $('.loading').hide()
         }
 
         getJournals();
@@ -214,6 +223,7 @@
                 RedAlert('n', 'لطفا فیلد خالی را تکمیل نمایید');
                 return;
             }
+            $('.loading').show();
             const formdata = new FormData();
             const obj = {
                 EnterDate: $('#enterdate').val(),
@@ -241,6 +251,7 @@
                         GreenAlert('n', d.message);
                         ClearFields('home');
                         getJournals();
+                        $('.loading').hide();
                     } else {
                         RedAlert('n', d.message);
                     }
@@ -308,6 +319,11 @@
         }
 
         const addImageToJournal = (imageId) => {
+            if (!$('#file')[0].files.length) {
+                RedAlert('n', 'لطفا فایل را انتخاب نمایید');
+                return;
+            }
+            $('.loading').show()
             var fd = new FormData();
             fd.append('image', $('#changeImageInput')[0].files[0]);
             fd.append('image-id', imageId);
@@ -322,6 +338,7 @@
                     GreenAlert('n', 'تصویر با موفقیت ثبت شد');
                     $('#modalAddImage').modal('hide');
                     getJournals();
+                    $('.loading').hide()
                 },
                 error: () => {
                     RedAlert('n', 'خطا در برقراری ارتباط');
@@ -363,6 +380,7 @@
                 RedAlert('n', 'لطفا فیلد خالی را تکمیل نمایید');
                 return;
             }
+            $('.loading').show()
             const formdata = new FormData();
             const obj = {
                 Id: journalId,
@@ -391,6 +409,7 @@
                         GreenAlert('n', d.message);
                         CancelEdit();
                         getJournals();
+                        $('.loading').hide()
                     } else {
                         RedAlert('n', d.message);
                     }
@@ -414,6 +433,7 @@
                 RedAlert('n', 'لطفا هر دو فیلد را کامل کنید');
                 return;
             }
+            $('.loading').show()
             AjaxCall({
                 url: 'api.asmx/GetJournals',
                 param: {
