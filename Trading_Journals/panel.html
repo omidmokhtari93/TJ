@@ -138,7 +138,7 @@
     <div class="modal fade sans" data-backdrop="static" tabindex="-1" role="dialog" id="detailmodal">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                
+
             </div>
         </div>
     </div>
@@ -307,7 +307,7 @@
                     $('#closeravani').val(d.CloseRavani)
                     $('#mistakes').val(d.Mistakes)
                     $('#comment').val(d.Comment)
-                    $('<a href="' + d.FilePath + '" target="_blank" id="tasvir">تصویر</a>').insertBefore('#file')
+                    d.FilePath != "" && $('<a href="' + d.FilePath + '" target="_blank" id="tasvir">تصویر</a>').insertBefore('#file')
                     $('#edit').show()
                     $('#cancel').show()
                     $('#sabt').hide()
