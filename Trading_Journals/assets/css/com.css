@@ -109,3 +109,8 @@ body {
     width: 50px;
     height: auto;
 }
+.login-loading {
+    vertical-align: middle !important;
+    width: 15px;
+    height: 15px;
+}

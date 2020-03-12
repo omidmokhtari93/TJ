@@ -16,7 +16,7 @@
     <script src="assets/js/script.js"></script>
 </head>
 <body>
-    <div class="container text-center p-4 sans">
+    <div class="container text-center p-4 sans" id="login">
         <div class="row">
             <div class="col-sm-4 offset-md-4">
                 <img class="logo" src="/assets/img/logo.png" />
@@ -30,7 +30,12 @@
         </div>
         <div class="row">
             <div class="col-sm-4 offset-md-4">
-                <button class="btn btn-block btn-primary" id="btnLogin">ورود</button>
+                <button class="btn btn-block btn-primary" onclick="Login()">
+                    ورود
+                    <div class="spinner-border ml-2 login-loading" role="status" style="display: none;">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </button>
             </div>
         </div>
     </div>

@@ -100,7 +100,7 @@
                             <input type="file" class="mt-3" id="file" />
                         </div>
                         <div class="col-sm-6 text-left pt-3">
-                            <div class="spinner-border ml-2 loading" role="status" 
+                            <div class="spinner-border ml-2 loading" role="status"
                                  style="vertical-align: middle !important; display: none;">
                                 <span class="sr-only">Loading...</span>
                             </div>
@@ -135,30 +135,13 @@
         </div>
     </div>
 
-    <div class="modal fade sans" tabindex="-1" role="dialog" id="modalAddImage">
+    <div class="modal fade sans" data-backdrop="static" tabindex="-1" role="dialog" id="detailmodal">
         <div class="modal-dialog modal-lg">
-            <div class="modal-content rtl text-right">
-                <div class="card">
-                    <div class="card-header">افزودن عکس</div>
-                    <div class="card-body">
-                        <div>انتخاب فایل تصویر</div>
-                        <input type="file" id="changeImageInput" />
-                    </div>
-                    <div class="card-footer text-left">
-                        <div class="spinner-border ml-2 loading" role="status" 
-                             style="vertical-align: middle !important; display: none;">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                        <button class="btn btn-primary" type="button"
-                                onclick="addImageToJournal($('#modalAddImage').attr('image-id'))">
-                            ثبت
-                        </button>
-                    </div>
-                </div>
+            <div class="modal-content">
+                
             </div>
         </div>
     </div>
-
 
     <script>
         $(function () {
@@ -193,7 +176,7 @@
                 '<th>زمان خروج از معامله</th>' +
                 '<th>حجم معاملاتی</th>' +
                 '<th>سود / ضرر</th>' +
-                '<th></th>' +
+                '<th>تصویر</th>' +
                 '<th></th>' +
                 '<th></th>' +
                 '</tr>')
@@ -205,9 +188,7 @@
                     "<td>" + x.CloseDate + "</td>" +
                     "<td>" + x.Volume + "</td>" +
                     "<td>" + x.Profit + "</td>" +
-                    "<td>" + (x.FilePath == "" ? "<span id=\"" + x.Id + "\">افزودن عکس</span>"
-                        : "<img src=\"" + x.FilePath + "\"/>") +
-                    "</td>" +
+                    "<td>" + (x.FilePath == "" ? "ندارد" : "دارد") + "</td>" +
                     "<td><span id=\"" + x.Id + "\">نمایش جزئیات</span></td>" +
                     "<td><span id=\"" + x.Id + "\">ویرایش</span></td>" +
                     "</tr>");
@@ -281,69 +262,29 @@
                         }
                     })
                     break;
-                case 6:
-                    $('#modalAddImage').attr('image-id', this.id);
-                    $('#modalAddImage').modal('show')
-                    break;
                 default:
             }
 
         })
 
         const AppendModal = (data) => {
-            var modal = '<div class="modal fade sans" data-backdrop="static" tabindex="-1" role="dialog" id="detailmodal"> ' +
-                '<div class="modal-dialog modal-lg"> ' +
-                '<div class="modal-content"> ' +
-                '<img style="width: 100%; height: auto;" src="' + data.FilePath + '" /> ' +
+            var modal = '<img style="width: 100%; height: auto;" src="' + data.FilePath + '" /> ' +
                 '<div class="card-body rtl text-right"> ' +
-                '<p>زمان رود به معامله : ' + data.EnterDate + '</p> ' +
-                '<p>زمان خروج از معامله : ' + data.CloseDate + '</p> ' +
-                '<p>نماد : ' + data.Symbol + '</p> ' +
-                '<p>حجم معاملاتی : ' + data.Volume + '</p> ' +
-                '<p>سود / ضرر : ' + data.Profit + '</p> ' +
-                '<p>دلایل ورود به معامله : ' + data.TradeReason + '</p> ' +
-                '<p>حالت روانی ورود به معامله : ' + data.EnterRavani + '</p> ' +
-                '<p>حالت روانی خروج از معامله : ' + data.CloseRavani + '</p> ' +
-                '<p>اشتباهات : ' + data.Mistakes + '</p> ' +
-                '<p>توضیحات : ' + data.Comment + '</p> ' +
+                '<p><span class="badge badge-primary">زمان رود به معامله : </span> ' + data.EnterDate + '</p> ' +
+                '<p><span class="badge badge-primary">زمان خروج از معامله : </span> ' + data.CloseDate + '</p> ' +
+                '<p><span class="badge badge-primary">نماد : </span> ' + data.Symbol + '</p> ' +
+                '<p><span class="badge badge-primary">حجم معاملاتی : </span> ' + data.Volume + '</p> ' +
+                '<p><span class="badge badge-primary">سود / ضرر : </span> ' + data.Profit + '</p> ' +
+                '<p><span class="badge badge-primary">دلایل ورود به معامله : </span> ' + data.TradeReason + '</p> ' +
+                '<p><span class="badge badge-primary">حالت روانی ورود به معامله : </span> ' + data.EnterRavani + '</p> ' +
+                '<p><span class="badge badge-primary">حالت روانی خروج از معامله : </span> ' + data.CloseRavani + '</p> ' +
+                '<p><span class="badge badge-primary">اشتباهات : </span> ' + data.Mistakes + '</p> ' +
+                '<p><span class="badge badge-primary">توضیحات : </span> ' + data.Comment + '</p> ' +
                 '<div class="text-left"> ' +
-                '<button class="btn btn-danger" onclick="removeModal()">بستن</button> ' +
-                '</div> </div> </div> </div> </div>';
-            $('body').append(modal);
+                '<button class="btn btn-danger" onclick="$(\'#detailmodal\').modal(\'hide\')">بستن</button> ' +
+                '</div></div>';
+            $('#detailmodal').find('.modal-content').empty().append(modal);
             $('#detailmodal').modal('show');
-        }
-
-        const removeModal = () => {
-            $('#detailmodal').modal('hide');
-            setTimeout(() => { $('#detailmodal').remove() }, 500)
-        }
-
-        const addImageToJournal = (imageId) => {
-            if (!$('#file')[0].files.length) {
-                RedAlert('n', 'لطفا فایل را انتخاب نمایید');
-                return;
-            }
-            $('.loading').show()
-            var fd = new FormData();
-            fd.append('image', $('#changeImageInput')[0].files[0]);
-            fd.append('image-id', imageId);
-            $.ajax({
-                url: 'api.asmx/AddJournalImage',
-                data: fd,
-                type: 'POST',
-                processData: false,
-                contentType: false,
-                complete: (e) => {
-                    console.log(e);
-                    GreenAlert('n', 'تصویر با موفقیت ثبت شد');
-                    $('#modalAddImage').modal('hide');
-                    getJournals();
-                    $('.loading').hide()
-                },
-                error: () => {
-                    RedAlert('n', 'خطا در برقراری ارتباط');
-                }
-            });
         }
 
         const editJournalActive = (id) => {
