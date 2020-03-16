@@ -97,7 +97,7 @@ namespace Trading_Journals
                                      ",[Comment],[FilePath],[Mistakes]FROM Journals " +
                                      "where (Id = " + id + " or " + id + " = -1) and " +
                                      "((EnterDate > '" + startDate + "' and CloseDate < '" + endDate + "') or " +
-                                     " ('" + startDate + "' = '-1' and '" + endDate + "' = '-1'))", con);
+                                     " ('" + startDate + "' = '-1' and '" + endDate + "' = '-1')) order by Id desc", con);
             var rd = cmd.ExecuteReader();
             while (rd.Read())
             {
