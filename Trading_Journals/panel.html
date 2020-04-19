@@ -187,7 +187,9 @@
                     "<td>" + x.EnterDate + "</td>" +
                     "<td>" + x.CloseDate + "</td>" +
                     "<td>" + x.Volume + "</td>" +
-                    "<td>" + x.Profit + "</td>" +
+                    (parseFloat(x.Profit) < 0
+                        ? "<td style=\"background-color:lightcoral\">" + x.Profit + "</td>"
+                        : "<td style=\"background-color:lightgreen\">" + x.Profit + "</td>") +
                     "<td>" + (x.FilePath == "" ? "ندارد" : "دارد") + "</td>" +
                     "<td><span id=\"" + x.Id + "\">نمایش جزئیات</span></td>" +
                     "<td><span id=\"" + x.Id + "\">ویرایش</span></td>" +
